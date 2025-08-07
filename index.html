@@ -59,7 +59,7 @@
     </div>
     <div class="card wide">
       <h2>AI Recommendation</h2>
-      <p id="aiRecommendation">Fetching...</p>
+      <p id="aiRecommendation
     </div>
     <div id="weather-report" class="weather-report card wide">
       <div class="weather-header">
@@ -77,8 +77,9 @@
 
   <section class="controls">
     <h2>Controls</h2>
-    <button onclick="togglePump(true)">Start Pump</button>
-    <button onclick="togglePump(false)">Stop Pump</button>
+    <button onclick="togglePumpWithManualOverride(true)">Start Pump</button>
+    <button onclick="togglePumpWithManualOverride(false)">Stop Pump</button>
+    <button onclick="resetAutoMode()">Return to Auto</button>
   </section>
 
   <div id="air-quality-popup" class="air-quality-popup" style="display:none;">
