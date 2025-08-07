@@ -34,7 +34,10 @@ async function fetchSensorData() {
 async function fetchAIRecommendation() {
   try {
     const res = await fetch(`${FIREBASE_URL}/ai/recommendation.json`);
-    const data = await res.json();
+    let data = await res.json();
+    if (typeof data === "string" && data.startsWith('"') && data.endsWith('"')) {
+      data = data.slice(1, -1);
+    }
     document.getElementById("aiRecommendation").innerText = data;
   } catch (e) {
     console.error("Failed to fetch AI recommendation", e);
@@ -73,23 +76,43 @@ async function togglePump(state) {
   }
 }
 
+// Start/Stop Pump with Manual Override
+async function togglePumpWithManualOverride(state) {
+  try {
+    await fetch(`${FIREBASE_URL}/controls.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pump: state, manual_override: true })
+    });
+    showPumpPopup(state);
+    alert(`Pump turned ${state ? "ON" : "OFF"} (Manual Override Active)`);
+  } catch (e) {
+    console.error("Failed to update pump state", e);
+    alert("Error communicating with server.");
+  }
+}
+
+// Return to Auto Mode (automation resumes)
+function resetAutoMode() {
+  fetch(`${FIREBASE_URL}/controls.json`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ manual_override: false })
+  })
+  .then(() => {
+    alert("Returned to AI auto mode.");
+  })
+  .catch((err) => {
+    alert("Failed to reset to auto mode: " + err);
+  });
+}
+
 function refreshAllData() {
   fetchSensorData();
   fetchAIRecommendation();
 
   // Refresh weather (auto-detect location each time for accuracy)
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        updateWeather(pos.coords.latitude, pos.coords.longitude);
-      },
-      err => {
-        updateWeather(51.5074, -0.1278); // fallback to London
-      }
-    );
-  } else {
-    updateWeather(51.5074, -0.1278);
-  }
+  fetchWeather();
 
   // Fetch pump status if you have a separate endpoint
   fetchPumpStatus();
@@ -230,3 +253,18 @@ function showAirQualityAlert(message = "Air Quality is BAD!") {
 
 // Example usage: call this when air quality is bad
 // showAirQualityAlert("Air Quality is BAD!");
+
+function fetchWeather() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        updateWeather(pos.coords.latitude, pos.coords.longitude);
+      },
+      err => {
+        updateWeather(51.5074, -0.1278); // fallback to London
+      }
+    );
+  } else {
+    updateWeather(51.5074, -0.1278);
+  }
+}
