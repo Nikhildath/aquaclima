@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AQUACLIMA Dashboard</title>
+  <link rel="stylesheet" href="style/index.css"/>
+</head>
+<body>
+  <header>
+    <h1>AQUACLIMA 💧</h1>
+    <p class="welcome-message">
+      Welcome to AquaClima – Empowering Smart Agriculture with Data & Innovation!
+    </p>
+    <p>Smart Water & Environmental Management System</p>
+  </header>
+
+  <div id="loading-screen">
+    <div class="garden-loader">
+      <span class="sprout">🌱</span>
+      <span class="plant">🌿</span>
+      <span class="flower">🌻</span>
+      <div class="loader-glow"></div>
+    </div>
+    <div class="loading-text">
+      <span class="loading-title">AquaClima</span><br>
+      <span class="loading-sub">Growing your smart garden...</span>
+    </div>
+  </div>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Soil Moisture</h2>
+      <p id="soilMoisture">-- %</p>
+    </div>
+    <div class="card">
+      <h2>Water Level</h2>
+      <p id="waterLevel">-- cm</p>
+    </div>
+    <div class="card">
+      <h2>pH Level</h2>
+      <p id="phValue">--</p>
+    </div>
+    <div class="card">
+      <h2>Air Temp / Humidity</h2>
+      <p id="airData">-- °C / -- %</p>
+    </div>
+    <div class="card">
+      <h2>Water Temp</h2>
+      <p id="waterTemp">-- °C</p>
+    </div>
+    <div class="card">
+      <h2>Air Quality</h2>
+      <p id="airQuality">--</p>
+    </div>
+    <div class="card">
+      <h2>Water Flow</h2>
+      <p id="flowRate">-- L/min</p>
+    </div>
+    <div class="card wide">
+      <h2>AI Recommendation</h2>
+      <p id="aiRecommendation">Fetching...</p>
+    </div>
+    <div id="weather-report" class="weather-report card wide">
+      <div class="weather-header">
+        <span class="weather-icon">🌦️</span>
+        <span class="weather-title">Weather</span>
+      </div>
+      <div class="weather-details">
+        <span class="weather-temp"></span>
+        <span class="weather-desc"></span>
+        <span class="weather-humidity"></span>
+        <span class="weather-wind"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls">
+    <h2>Controls</h2>
+    <button onclick="togglePump(true)">Start Pump</button>
+    <button onclick="togglePump(false)">Stop Pump</button>
+  </section>
+
+  <div id="air-quality-popup" class="air-quality-popup" style="display:none;">
+    <span class="aqi-icon">⚠️</span>
+    <span class="aqi-message">Air Quality is BAD!</span>
+  </div>
+  <audio id="aqi-alert-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b6c2b48.mp3"></audio>
+
+  <div id="pump-popup" class="pump-popup" style="display:none;">
+    <span class="pump-icon">💧</span>
+    <span class="pump-message"></span>
+  </div>
+  <audio id="pump-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b6c2b48.mp3"></audio>
+
+  <footer>
+    <p>🌿 AQUACLIMA | Real-time AI Agriculture System</p>
+  </footer>
+
+  <script src="script/main.js"></script>
+</body>
+</html>

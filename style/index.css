@@ -1,0 +1,481 @@
+/* Reset & base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%);
+  color: #222;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+h1 {
+  font-size: 3.2rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-align: center;
+  color: #2e7d32;
+  text-shadow:
+    0 2px 8px #8bc34a88,
+    0 1px 0 #fff,
+    0 0px 24px #00bcd455,
+    0 0px 40px #43a04755;
+  position: relative;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  background: none;
+  transition: color 0.3s;
+}
+
+h1::before {
+  content: "🌱";
+  display: inline-block;
+  font-size: 2.5rem;
+  vertical-align: middle;
+  margin-right: 12px;
+  animation: leaf-bounce 1.8s infinite, leaf-spin 4s linear infinite;
+  filter: drop-shadow(0 2px 4px #8bc34a88);
+}
+
+@keyframes leaf-bounce {
+  0%, 100% { transform: translateY(0);}
+  50% { transform: translateY(-10px);}
+}
+
+@keyframes leaf-spin {
+  0% { transform: rotate(-10deg);}
+  50% { transform: rotate(10deg);}
+  100% { transform: rotate(-10deg);}
+}
+
+h1::after {
+  content: "";
+  display: block;
+  margin: 0 auto;
+  margin-top: 14px;
+  width: 120px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #43a047 0%, #8bc34a 60%, #00bcd4 100%);
+  opacity: 0.95;
+  box-shadow: 0 2px 16px #388e3c44;
+  animation: underline-glow 2s infinite alternate;
+}
+
+@keyframes underline-glow {
+  0% { box-shadow: 0 2px 16px #388e3c44; }
+  100% { box-shadow: 0 4px 32px #00bcd455; }
+}
+
+p {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+/* Grid & Cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 22px;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: #fff;
+  padding: 22px 18px;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #00968833;
+  border: 2px solid #e0e0e0;
+  transition:
+    transform 0.25s cubic-bezier(.4,2,.3,.7),
+    box-shadow 0.25s;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 8px 32px #00968855;
+}
+
+.card h2 {
+  color: #009688;
+  margin-bottom: 12px;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+/* Controls & Buttons */
+.controls {
+  margin-top: 36px;
+  text-align: center;
+}
+
+.controls button {
+  margin: 12px;
+  padding: 14px 28px;
+  background: #fff;
+  border: 2px solid #43a047;
+  border-radius: 10px;
+  color: #43a047;
+  font-weight: bold;
+  font-size: 1.08rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #43a04722;
+  transition:
+    border-color 0.3s,
+    color 0.3s,
+    transform 0.4s;
+  position: relative;
+}
+
+.controls button:hover {
+  border-color: #009688;
+  color: #009688;
+  transform: rotate(-4deg) scale(1.07);
+  box-shadow: 0 4px 16px #00968833;
+}
+
+/* Welcome Message */
+.welcome-message {
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #388e3c;
+  margin-bottom: 28px;
+  background: linear-gradient(90deg, #e0f7fa 0%, #c8e6c9 100%);
+  border: 2px solid #8bc34a;
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: 0 2px 16px #8bc34a22;
+  letter-spacing: 1px;
+  position: relative;
+  transition: box-shadow 0.3s;
+}
+
+.welcome-message::before {
+  content: "🌾";
+  font-size: 1.6rem;
+  vertical-align: middle;
+  margin-right: 10px;
+  animation: leaf-bounce 2s infinite;
+  filter: drop-shadow(0 2px 4px #8bc34a88);
+}
+
+.welcome-message::after {
+  content: "🌦️";
+  font-size: 1.6rem;
+  vertical-align: middle;
+  margin-left: 10px;
+  animation: leaf-bounce 2s infinite reverse;
+  filter: drop-shadow(0 2px 4px #00bcd488);
+}
+
+/* Weather Report */
+#weather-report {
+  grid-column: span 2;
+  background: #f9f9f9;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 18px 24px;
+  box-shadow: 0 4px 24px #00968833;
+  margin-bottom: 32px;
+}
+
+.weather-report {
+  background: linear-gradient(120deg, #e0f7fa 70%, #c8e6c9 100%);
+  border: 2px solid #43a047;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #43a04722;
+  padding: 28px 22px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+.weather-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.weather-icon {
+  font-size: 2.6rem;
+  margin-right: 14px;
+  animation: leaf-bounce 2s infinite;
+  filter: drop-shadow(0 2px 4px #8bc34a88);
+}
+
+.weather-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #388e3c;
+  letter-spacing: 1px;
+}
+
+.weather-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  font-size: 1.15rem;
+  color: #2e7d32;
+}
+
+.weather-temp {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #009688;
+  margin-right: 10px;
+}
+
+.weather-desc {
+  font-size: 1.15rem;
+  color: #388e3c;
+  font-weight: 500;
+}
+
+.weather-humidity,
+.weather-wind {
+  font-size: 1rem;
+  color: #43a047;
+  background: #e0f7fa;
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-top: 6px;
+}
+
+/* Air Quality Popup */
+.air-quality-popup {
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: linear-gradient(90deg, #fffbe6 0%, #ffe0e0 100%);
+  border: 2px solid #d32f2f;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #d32f2f44;
+  padding: 22px 38px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 1.35rem;
+  color: #d32f2f;
+  font-weight: 700;
+  animation: pop-in 0.4s cubic-bezier(.4,2,.3,.7);
+}
+
+.aqi-icon {
+  font-size: 2.5rem;
+  animation: shake 1s infinite alternate;
+}
+
+@keyframes pop-in {
+  0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  80% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0% { transform: rotate(-10deg);}
+  100% { transform: rotate(10deg);}
+}
+
+/* Loading Screen */
+#loading-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s;
+}
+
+.garden-loader {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.garden-loader .sprout,
+.garden-loader .plant,
+.garden-loader .flower {
+  opacity: 0;
+  transform: scale(0.5) translateY(40px);
+  animation: grow-plant 1.2s forwards;
+}
+
+.garden-loader .plant {
+  animation-delay: 0.7s;
+}
+
+.garden-loader .flower {
+  animation-delay: 1.4s;
+}
+
+@keyframes grow-plant {
+  0% { opacity: 0; transform: scale(0.5) translateY(40px);}
+  60% { opacity: 1; transform: scale(1.1) translateY(-8px);}
+  80% { transform: scale(0.95) translateY(0);}
+  100% { opacity: 1; transform: scale(1) translateY(0);}
+}
+
+.loader-glow {
+  position: absolute;
+  left: 50%; bottom: -24px;
+  transform: translateX(-50%);
+  width: 120px; height: 24px;
+  background: radial-gradient(circle, #8bc34a55 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: glow-pulse 2s infinite alternate;
+  z-index: -1;
+}
+
+@keyframes glow-pulse {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.loading-text {
+  font-size: 1.4rem;
+  color: #388e3c;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px #8bc34a44;
+  margin-top: 10px;
+  text-align: center;
+  animation: fade-in 2s;
+}
+
+.loading-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #43a047;
+  letter-spacing: 4px;
+  text-shadow: 0 4px 24px #8bc34a55;
+  display: block;
+  margin-bottom: 6px;
+  animation: fade-in 1.2s;
+}
+
+.loading-sub {
+  font-size: 1.1rem;
+  color: #009688;
+  font-weight: 500;
+  letter-spacing: 1px;
+  animation: fade-in 2.2s;
+}
+
+@keyframes fade-in {
+  from { opacity: 0;}
+  to { opacity: 1;}
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 48px;
+  color: #888;
+  font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 700px) {
+  h1 {
+    font-size: 2.1rem;
+    letter-spacing: 2px;
+    padding-bottom: 10px;
+  }
+  h1::after {
+    width: 60px;
+    height: 4px;
+  }
+  h1::before {
+    font-size: 1.4rem;
+    margin-right: 6px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .card {
+    padding: 16px 10px;
+  }
+  .controls button {
+    width: 90%;
+    font-size: 1rem;
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 400px) {
+  body {
+    padding: 8px;
+  }
+  h1 {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    padding-bottom: 6px;
+  }
+  h1::after {
+    width: 30px;
+    height: 2px;
+  }
+  h1::before {
+    font-size: 1rem;
+    margin-right: 4px;
+  }
+  .controls button {
+    font-size: 0.9rem;
+    padding: 10px 0;
+  }
+}
+
+/* Pump Popup */
+.pump-popup {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: linear-gradient(90deg, #e0f7fa 0%, #c8e6c9 100%);
+  border: 2px solid #43a047;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #43a04744;
+  padding: 18px 36px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 1.25rem;
+  color: #388e3c;
+  font-weight: 700;
+  animation: pop-in 0.4s cubic-bezier(.4,2,.3,.7);
+}
+
+.pump-icon {
+  font-size: 2.2rem;
+  animation: shake 1s infinite alternate;
+}
