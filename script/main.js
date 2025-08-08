@@ -1,5 +1,6 @@
 const FIREBASE_URL = "https://aquaclima-576b3-default-rtdb.firebaseio.com/";
 
+// Loading screen logic
 window.addEventListener('load', () => {
   const loadingScreen = document.getElementById('loading-screen');
   if (loadingScreen) {
@@ -10,17 +11,70 @@ window.addEventListener('load', () => {
   }
 });
 
-// Update your UI here
+// Update UI with sensor data
 function updateUI(data) {
+  // Moisture
   document.getElementById("soilMoisture").innerText = data.soil + " %";
-  document.getElementById("phValue").innerText = data.ph;
-  document.getElementById("flowRate").innerText = data.flow + " L/min";
-  document.getElementById("waterLevel").innerText = data.water_level + " cm";
-  document.getElementById("waterTemp").innerText = data.water_temp + " °C";
-  document.getElementById("airData").innerText = data.air_temp + " °C / " + data.humidity + " %";
-  document.getElementById("airQuality").innerText = data.air_quality + " AQI";
+  updateGauge("moisture-bar", ".circular-chart.moisture .gauge-value", data.soil, 100, "%");
+
+  // Humidity
+  document.getElementById("airHumidity").innerText = data.humidity + " %";
+  updateGauge("humidity-bar", ".circular-chart.humidity .gauge-value", data.humidity, 100, "%");
+
+  // Water Level
+  const waterLevelStatus = getStatus(data.water_level, [20, 40, 60], ["Low", "Average", "Good", "High"]);
+  document.getElementById("waterLevel").innerText = `${waterLevelStatus.text} (${data.water_level} cm)`;
+  updateGauge("waterlevel-bar", ".circular-chart.waterlevel .gauge-value", data.water_level, 100, "cm", waterLevelStatus.text);
+
+  // pH Level
+  const phStatus = getStatus(data.ph, [5.5, 6.5, 7.5], ["Acidic", "Good", "Average", "Alkaline"]);
+  document.getElementById("phValue").innerText = `${phStatus.text} (${data.ph})`;
+  updateGauge("ph-bar", ".circular-chart.ph .gauge-value", data.ph, 14, "", phStatus.text);
+
+  // Air Temp / Humidity
+  document.getElementById("airData").innerText = `${data.air_temp} °C / ${data.humidity} %`;
+  updateGauge("airtemp-bar", ".circular-chart.airtemp .gauge-value", data.air_temp, 50, "°C");
+
+  // Water Temp
+  const waterTempStatus = getStatus(data.water_temp, [10, 20, 30], ["Cold", "Good", "Warm", "Hot"]);
+  document.getElementById("waterTemp").innerText = `${waterTempStatus.text} (${data.water_temp} °C)`;
+  updateGauge("watertemp-bar", ".circular-chart.watertemp .gauge-value", data.water_temp, 50, "°C", waterTempStatus.text);
+
+  // Air Quality
+  const airQualityStatus = getStatus(data.air_quality, [50, 100, 150], ["Good", "Average", "Bad", "Very Bad"]);
+  document.getElementById("airQuality").innerText = `${airQualityStatus.text} (${data.air_quality} AQI)`;
+  updateGauge("airquality-bar", ".circular-chart.airquality .gauge-value", data.air_quality, 500, "AQI", airQualityStatus.text);
+
+  // Water Flow
+  const flowStatus = getStatus(data.flow, [1, 3, 5], ["Low", "Average", "Good", "High"]);
+  document.getElementById("flowRate").innerText = `${flowStatus.text} (${data.flow} L/min)`;
+  updateGauge("flow-bar", ".circular-chart.flow .gauge-value", data.flow, 10, "L/min", flowStatus.text);
+
+  // Battery Percentage
+  document.getElementById("batteryPercent").innerText = 
+    (data.battery !== undefined ? data.battery + " %" : "-- %");
 }
 
+// Helper to update gauge
+function updateGauge(barId, valueSelector, value, max, unit, statusText) {
+  const bar = document.getElementById(barId);
+  const valueElem = document.querySelector(valueSelector);
+  if (bar && valueElem) {
+    const percent = Math.max(0, Math.min(100, (value / max) * 100));
+    bar.setAttribute('stroke-dasharray', `${percent}, 100`);
+    valueElem.textContent = statusText ? `${statusText} (${value} ${unit})` : `${value} ${unit}`;
+  }
+}
+
+// Helper to get status text
+function getStatus(value, thresholds, labels) {
+  for (let i = 0; i < thresholds.length; i++) {
+    if (value < thresholds[i]) return { text: labels[i] };
+  }
+  return { text: labels[labels.length - 1] };
+}
+
+// Fetch sensor data from Firebase
 async function fetchSensorData() {
   try {
     const res = await fetch(`${FIREBASE_URL}/sensors.json`);
@@ -31,6 +85,7 @@ async function fetchSensorData() {
   }
 }
 
+// Fetch AI recommendation
 async function fetchAIRecommendation() {
   try {
     const res = await fetch(`${FIREBASE_URL}/ai/recommendation.json`);
@@ -44,19 +99,55 @@ async function fetchAIRecommendation() {
   }
 }
 
+// Manual override: Start/Stop Pump
+async function togglePumpWithManualOverride(state) {
+  try {
+    await fetch(`${FIREBASE_URL}/controls.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pump: state, manual_override: true })
+    });
+    showPumpPopup(state);
+    setPumpStatus(state);
+  } catch (e) {
+    console.error("Failed to update pump state", e);
+  }
+}
+
+// Return to Auto Mode (automation resumes)
+function resetAutoMode() {
+  fetch(`${FIREBASE_URL}/controls.json`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ manual_override: false })
+  })
+  .then(() => {
+    showPumpPopup("auto"); // Show auto mode popup
+  })
+  .catch((err) => {
+    console.error("Failed to reset to auto mode: " + err);
+  });
+}
+
+// Show pump popup (static, no fade/move, just appears/disappears)
 function showPumpPopup(isOn) {
   const popup = document.getElementById('pump-popup');
   const sound = document.getElementById('pump-sound');
   if (popup) {
-    popup.querySelector('.pump-message').textContent = isOn ? "Pump Started!" : "Pump Stopped!";
-    popup.querySelector('.pump-icon').textContent = isOn ? "💧" : "🛑";
+    if (isOn === "auto") {
+      popup.querySelector('.pump-message').textContent = "Auto Mode Activated!";
+      popup.querySelector('.pump-icon').textContent = "🤖";
+    } else {
+      popup.querySelector('.pump-message').textContent = isOn ? "Pump Started!" : "Pump Stopped!";
+      popup.querySelector('.pump-icon').textContent = isOn ? "💧" : "🛑";
+    }
     popup.style.display = 'flex';
     popup.style.opacity = '1';
     sound.currentTime = 0;
     sound.play();
     setTimeout(() => {
+      popup.style.display = 'none';
       popup.style.opacity = '0';
-      setTimeout(() => popup.style.display = 'none', 400);
     }, 3000); // Hide after 3 seconds
   }
 }
@@ -76,63 +167,54 @@ async function togglePump(state) {
   }
 }
 
-// Start/Stop Pump with Manual Override
-async function togglePumpWithManualOverride(state) {
-  try {
-    await fetch(`${FIREBASE_URL}/controls.json`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pump: state, manual_override: true })
-    });
-    showPumpPopup(state);
-    alert(`Pump turned ${state ? "ON" : "OFF"} (Manual Override Active)`);
-  } catch (e) {
-    console.error("Failed to update pump state", e);
-    alert("Error communicating with server.");
+// Update pump status on UI
+function setPumpStatus(isOn) {
+  const pumpStateElem = document.getElementById('pump-state');
+  if (pumpStateElem) {
+    pumpStateElem.textContent = isOn ? "ON" : "OFF";
+    pumpStateElem.className = isOn ? "on" : "off";
   }
 }
 
-// Return to Auto Mode (automation resumes)
-function resetAutoMode() {
-  fetch(`${FIREBASE_URL}/controls.json`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ manual_override: false })
-  })
-  .then(() => {
-    alert("Returned to AI auto mode.");
-  })
-  .catch((err) => {
-    alert("Failed to reset to auto mode: " + err);
-  });
-}
-
-function refreshAllData() {
-  fetchSensorData();
-  fetchAIRecommendation();
-
-  // Refresh weather (auto-detect location each time for accuracy)
-  fetchWeather();
-
-  // Fetch pump status if you have a separate endpoint
-  fetchPumpStatus();
-
-  // Check air quality and show alert if needed
-  checkAirQuality();
-}
-
-// Example pump status fetcher (customize as needed)
+// Fetch pump status from Firebase
 async function fetchPumpStatus() {
   try {
     const res = await fetch(`${FIREBASE_URL}/controls.json`);
     const data = await res.json();
-    setPumpStatus(data.pump); // true/false
+    setPumpStatus(data.pump);
   } catch (e) {
     console.error("Failed to fetch pump status", e);
   }
 }
 
-// Example air quality checker (customize threshold as needed)
+// Animate cards on load
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.card').forEach((card, i) => {
+    card.style.opacity = '0';
+    setTimeout(() => {
+      card.style.opacity = '1';
+    }, 150 + i * 120);
+  });
+});
+
+// Enhanced popup show/hide
+function showAirQualityAlert(message = "Air Quality is BAD!") {
+  const popup = document.getElementById('air-quality-popup');
+  const sound = document.getElementById('aqi-alert-sound');
+  if (popup) {
+    popup.querySelector('.aqi-message').textContent = message;
+    popup.style.display = 'flex';
+    setTimeout(() => popup.style.opacity = '1', 10);
+    sound.currentTime = 0;
+    sound.play();
+    setTimeout(() => {
+      popup.style.opacity = '0';
+      setTimeout(() => popup.style.display = 'none', 400);
+    }, 4000);
+  }
+}
+
+// Check air quality and show alert if needed
 function checkAirQuality() {
   const airQualityElem = document.getElementById("airQuality");
   if (airQualityElem) {
@@ -141,35 +223,6 @@ function checkAirQuality() {
       showAirQualityAlert("Air Quality is BAD!");
     }
   }
-}
-
-// Poll every 5 seconds
-setInterval(refreshAllData, 5000);
-
-// Replace 'YOUR_API_KEY' with your OpenWeatherMap API key
-const API_KEY = 'f8851fe88abc4439b0c161938250708';
-
-function updateWeather(lat, lon) {
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
-    .then(res => res.json())
-    .then(data => {
-      const weather = data.current_weather;
-      document.querySelector('.weather-temp').textContent = `${Math.round(weather.temperature)}°C`;
-      document.querySelector('.weather-desc').textContent = getWeatherDescription(weather.weathercode);
-      document.querySelector('.weather-humidity').textContent = `Humidity: N/A`;
-      document.querySelector('.weather-wind').textContent = `Wind: ${weather.windspeed} km/h`;
-      document.querySelector('.weather-icon').textContent = getWeatherIcon(weather.weathercode);
-
-      // Friendly summary
-      let summary = `It's currently ${getWeatherDescription(weather.weathercode).toLowerCase()} in your area.`;
-      let summaryElem = document.querySelector('.weather-summary');
-      if (!summaryElem) {
-        summaryElem = document.createElement('div');
-        summaryElem.className = 'weather-summary';
-        document.querySelector('.weather-details').appendChild(summaryElem);
-      }
-      summaryElem.textContent = summary;
-    });
 }
 
 // Weather code mapping for Open-Meteo
@@ -220,40 +273,7 @@ function getWeatherIcon(code) {
   return iconMap[code] || "🌦️";
 }
 
-// Auto-detect location
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      updateWeather(pos.coords.latitude, pos.coords.longitude);
-    },
-    err => {
-      // Fallback: use default city (London)
-      updateWeather(51.5074, -0.1278);
-    }
-  );
-} else {
-  updateWeather(51.5074, -0.1278);
-}
-
-function showAirQualityAlert(message = "Air Quality is BAD!") {
-  const popup = document.getElementById('air-quality-popup');
-  const sound = document.getElementById('aqi-alert-sound');
-  if (popup) {
-    popup.querySelector('.aqi-message').textContent = message;
-    popup.style.display = 'flex';
-    popup.style.opacity = '1';
-    sound.currentTime = 0;
-    sound.play();
-    setTimeout(() => {
-      popup.style.opacity = '0';
-      setTimeout(() => popup.style.display = 'none', 400);
-    }, 4000); // Hide after 4 seconds
-  }
-}
-
-// Example usage: call this when air quality is bad
-// showAirQualityAlert("Air Quality is BAD!");
-
+// Fetch weather from Open-Meteo (no API key needed)
 function fetchWeather() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -268,3 +288,38 @@ function fetchWeather() {
     updateWeather(51.5074, -0.1278);
   }
 }
+
+function updateWeather(lat, lon) {
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+    .then(res => res.json())
+    .then(data => {
+      const weather = data.current_weather;
+      document.getElementById('weather-summary').textContent =
+        `${Math.round(weather.temperature)}°C, ${getWeatherDescription(weather.weathercode)}`;
+      document.getElementById('weather-details').textContent =
+        `Wind: ${weather.windspeed} km/h`;
+    });
+}
+
+// Refresh all data
+function refreshAllData() {
+  fetchSensorData();
+  fetchAIRecommendation();
+  fetchWeather();
+  fetchPumpStatus();
+
+  // Check air quality and show alert if needed
+  checkAirQuality();
+}
+
+// Poll every 5 seconds
+setInterval(refreshAllData, 5000);
+
+// Initial data fetch
+refreshAllData();
+
+document.getElementById('fab').onclick = () => {
+  refreshAllData();
+  document.getElementById('fab').style.transform = 'rotate(360deg)';
+  setTimeout(() => document.getElementById('fab').style.transform = '', 400);
+};
