@@ -52,7 +52,7 @@ function updateUI(data) {
   // Water Level
   const waterLevelStatus = getStatus(data.water_level, [20, 40, 60], ["Low", "Average", "Good", "High"]);
   document.getElementById("waterLevel").innerText = `${waterLevelStatus.text} (${data.water_level} cm)`;
-  updateGauge("waterlevel-bar", ".circular-chart.waterlevel .gauge-value", data.water_level, 100, "cm", waterLevelStatus.text);
+  updateGauge("waterlevel-bar", ".circular-chart.waterlevel .gauge-value", data.water_level, 100, "%", waterLevelStatus.text);
 
   // pH Level
   const phStatus = getStatus(data.ph, [5.5, 6.5, 7.5], ["Acidic", "Good", "Average", "Alkaline"]);
@@ -364,3 +364,4 @@ document.getElementById('fab').onclick = () => {
   document.getElementById('fab').style.transform = 'rotate(360deg)';
   setTimeout(() => document.getElementById('fab').style.transform = '', 400);
 };
+
