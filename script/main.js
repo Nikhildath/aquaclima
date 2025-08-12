@@ -1,4 +1,4 @@
-const FIREBASE_URL = "https://aqua-e5797-default-rtdb.firebaseio.com/";
+const FIREBASE_URL = "https://aquaclima-576b3-default-rtdb.firebaseio.com/";
 
 // Stylish animated loading screen logic with typewriter effect and dissolve pop
 window.addEventListener('load', () => {
@@ -374,5 +374,6 @@ document.getElementById('fab').onclick = () => {
   document.getElementById('fab').style.transform = 'rotate(360deg)';
   setTimeout(() => document.getElementById('fab').style.transform = '', 400);
 };
+
 
 
