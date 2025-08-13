@@ -1,121 +1,143 @@
 const FIREBASE_URL = "https://aquaclima-576b3-default-rtdb.firebaseio.com/";
 
-// Stylish animated loading screen logic with typewriter effect and dissolve pop
+// Loading screen with smooth animation
 window.addEventListener('load', () => {
   const loadingScreen = document.getElementById('loading-screen');
   if (!loadingScreen) return;
 
-  // Typewriter effect for each line
-  const title = loadingScreen.querySelector('.loader-logo');
-  const subtitle = loadingScreen.querySelector('.loading-sub');
-  const empower = loadingScreen.querySelector('.loading-empower');
-
-  function typeWriter(element, text, speed = 60, callback) {
-    element.textContent = "";
-    let i = 0;
-    function type() {
-      if (i < text.length) {
-        element.textContent += text.charAt(i);
-        i++;
-        setTimeout(type, speed);
-      } else if (callback) {
-        setTimeout(callback, 400);
-      }
-    }
-    type();
-  }
-
-  // Animate each line in sequence
-  typeWriter(title, "AQUACLIMA 💧", 80, () => {
-    typeWriter(subtitle, "Empowering Smart Agriculture...", 45, () => {
-      typeWriter(empower, "Loading your dashboard...", 45, () => {
-        // Pop dissolve effect
-        loadingScreen.style.animation = "pop-dissolve 0.7s forwards";
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-        }, 700);
-      });
-    });
-  });
+  // Simulate loading progress
+  setTimeout(() => {
+    loadingScreen.style.animation = "pop-dissolve 0.7s forwards";
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+    }, 700);
+  }, 2000);
 });
 
 // Update UI with sensor data
 function updateUI(data) {
-  // Moisture
-  document.getElementById("soilMoisture").innerText = data.soil + " %";
-  updateGauge("moisture-bar", ".circular-chart.moisture .gauge-value", data.soil, 100, "%");
+  // Soil Moisture
+  const soilMoisture = data.soil || 0;
+  document.getElementById("soilMoisture").textContent = `${soilMoisture}%`;
+  updateProgressRing("soil-progress", soilMoisture, 100);
 
-  // Humidity
-  document.getElementById("airHumidity").innerText = data.humidity + " %";
-  updateGauge("humidity-bar", ".circular-chart.humidity .gauge-value", data.humidity, 100, "%");
+  // Air Humidity
+  const humidity = data.humidity || 0;
+  document.getElementById("airHumidity").textContent = `${humidity}%`;
+  updateProgressRing("humidity-progress", humidity, 100);
 
   // Water Level
-  const waterLevelStatus = getStatus(data.water_level, [20, 40, 60], ["Low", "Average", "Good", "High"]);
-  document.getElementById("waterLevel").innerText = `${waterLevelStatus.text} (${data.water_level} %)`;
-  updateGauge("waterlevel-bar", ".circular-chart.waterlevel .gauge-value", data.water_level, 100, "%", waterLevelStatus.text);
+  const waterLevel = data.water_level || 0;
+  const waterStatus = getStatusInfo(waterLevel, [20, 40, 60], ["Low", "Average", "Good", "High"]);
+  document.getElementById("waterLevel").textContent = `${waterLevel}%`;
+  document.getElementById("water-status").textContent = waterStatus.text;
+  document.getElementById("water-status").className = `sensor-status ${waterStatus.class}`;
 
   // pH Level
-  const phStatus = getStatus(data.ph, [5.5, 6.5, 7.5], ["Acidic", "Good", "Average", "Alkaline"]);
-  document.getElementById("phValue").innerText = `${phStatus.text} (${data.ph})`;
-  updateGauge("ph-bar", ".circular-chart.ph .gauge-value", data.ph, 14, "", phStatus.text);
+  const ph = data.ph || 0;
+  const phStatus = getStatusInfo(ph, [5.5, 6.5, 7.5], ["Acidic", "Good", "Average", "Alkaline"]);
+  document.getElementById("phValue").textContent = ph.toFixed(1);
+  document.getElementById("ph-status").textContent = phStatus.text;
+  document.getElementById("ph-status").className = `sensor-status ${phStatus.class}`;
 
-  // Air Temp / Humidity
-  document.getElementById("airData").innerText = `${data.air_temp} °C / ${data.humidity} %`;
-  updateGauge("airtemp-bar", ".circular-chart.airtemp .gauge-value", data.air_temp, 50, "°C");
+  // Air Temperature
+  const airTemp = data.air_temp || 0;
+  document.getElementById("airData").textContent = `${airTemp}°C`;
 
-  // Water Temp
-  const waterTempStatus = getStatus(data.water_temp, [10, 20, 30], ["Cold", "Good", "Warm", "Hot"]);
-  document.getElementById("waterTemp").innerText = `${waterTempStatus.text} (${data.water_temp} °C)`;
-  updateGauge("watertemp-bar", ".circular-chart.watertemp .gauge-value", data.water_temp, 50, "°C", waterTempStatus.text);
+  // Water Temperature
+  const waterTemp = data.water_temp || 0;
+  const waterTempStatus = getStatusInfo(waterTemp, [10, 20, 30], ["Cold", "Good", "Warm", "Hot"]);
+  document.getElementById("waterTemp").textContent = `${waterTemp}°C`;
+  document.getElementById("water-temp-status").textContent = waterTempStatus.text;
+  document.getElementById("water-temp-status").className = `sensor-status ${waterTempStatus.class}`;
 
-// Air Quality
-  const airQualityStatus = getStatus(data.air_quality, [50, 100, 150], ["Good", "Average", "Bad", "Hazardous"]);
-  document.getElementById("airQuality").innerText = `${airQualityStatus.text} (${data.air_quality} AQI)`;
-  updateGauge("airquality-bar", ".circular-chart.airquality .gauge-value", data.air_quality, 500, "AQI", airQualityStatus.text);
+  // Air Quality
+  const airQuality = data.air_quality || 0;
+  const airQualityStatus = getStatusInfo(airQuality, [50, 100, 150], ["Good", "Average", "Bad", "Hazardous"]);
+  document.getElementById("airQuality").textContent = `${airQuality} AQI`;
+  document.getElementById("air-quality-status").textContent = airQualityStatus.text;
+  document.getElementById("air-quality-status").className = `sensor-status ${airQualityStatus.class}`;
 
-// Trigger alert if AQI is bad or hazardous
-if (airQualityStatus.text === "Bad" || airQualityStatus.text === "Hazardous") {
-  showAirQualityAlert(`Air Quality is ${airQualityStatus.text}! (${data.air_quality} AQI)`, airQualityStatus.text);
-}
-
+  // Trigger alert if AQI is bad or hazardous
+  if (airQualityStatus.text === "Bad" || airQualityStatus.text === "Hazardous") {
+    showAirQualityAlert(`Air Quality is ${airQualityStatus.text}! (${airQuality} AQI)`);
+  }
 
   // Water Flow
-  const flowStatus = getStatus(data.flow, [1, 3, 5], ["Low", "Average", "Good", "High"]);
-  document.getElementById("flowRate").innerText = `${flowStatus.text} (${data.flow} L/min)`;
-  updateGauge("flow-bar", ".circular-chart.flow .gauge-value", data.flow, 10, "L/min", flowStatus.text);
+  const flow = data.flow || 0;
+  const flowStatus = getStatusInfo(flow, [1, 3, 5], ["Low", "Average", "Good", "High"]);
+  document.getElementById("flowRate").textContent = `${flow} L/min`;
+  document.getElementById("flow-status").textContent = flowStatus.text;
+  document.getElementById("flow-status").className = `sensor-status ${flowStatus.class}`;
 
   // Battery Percentage
-  document.getElementById("batteryPercent").innerText = 
-    (data.battery !== undefined ? data.battery + " %" : "-- %");
+  const battery = data.battery || 0;
+  document.getElementById("batteryPercent").textContent = `${battery}%`;
+  document.getElementById("battery-text").textContent = `${battery}%`;
+  updateBatteryLevel(battery);
 }
 
-// Helper to update gauge
-function updateGauge(barId, valueSelector, value, max, unit, statusText) {
-  const bar = document.getElementById(barId);
-  const valueElem = document.querySelector(valueSelector);
-  if (bar && valueElem) {
-    const percent = Math.max(0, Math.min(100, (value / max) * 100));
-    bar.setAttribute('stroke-dasharray', `${percent}, 100`);
-    valueElem.textContent = statusText ? `${statusText} (${value} ${unit})` : `${value} ${unit}`;
-  }
-}
-
-// Helper to get status text
-function getStatus(value, thresholds, labels) {
+// Helper function to get status info with CSS classes
+function getStatusInfo(value, thresholds, labels) {
+  const classes = ["danger", "good", "warning", "danger"];
   for (let i = 0; i < thresholds.length; i++) {
-    if (value < thresholds[i]) return { text: labels[i] };
+    if (value < thresholds[i]) {
+      return { text: labels[i], class: classes[i] };
+    }
   }
-  return { text: labels[labels.length - 1] };
+  return { text: labels[labels.length - 1], class: classes[classes.length - 1] };
 }
 
-// Fetch sensor data from Firebase (flat structure, no /sensors)
+// Update progress ring
+function updateProgressRing(elementId, value, max) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+  const circumference = 157; // 2 * π * 25
+  const offset = circumference - (percentage / 100) * circumference;
+  
+  element.style.strokeDashoffset = offset;
+}
+
+// Update battery level visual
+function updateBatteryLevel(percentage) {
+  const batteryLevel = document.getElementById("battery-level");
+  const batteryIndicator = document.querySelector(".battery-status .status-indicator");
+  
+  if (batteryLevel) {
+    batteryLevel.style.width = `${Math.max(5, percentage)}%`;
+    
+    // Change color based on battery level
+    if (percentage > 50) {
+      batteryLevel.style.background = "var(--success-color)";
+      if (batteryIndicator) {
+        batteryIndicator.className = "status-indicator active";
+      }
+    } else if (percentage > 20) {
+      batteryLevel.style.background = "var(--warning-color)";
+      if (batteryIndicator) {
+        batteryIndicator.className = "status-indicator warning";
+      }
+    } else {
+      batteryLevel.style.background = "var(--danger-color)";
+      if (batteryIndicator) {
+        batteryIndicator.className = "status-indicator danger";
+      }
+    }
+  }
+}
+
+// Fetch sensor data from Firebase
 async function fetchSensorData() {
   try {
     const res = await fetch(`${FIREBASE_URL}.json`);
     const data = await res.json();
-    updateUI(data);
-  } catch (e) {
-    console.error("Failed to fetch sensor data", e);
+    if (data) {
+      updateUI(data);
+    }
+  } catch (error) {
+    console.error("Failed to fetch sensor data:", error);
   }
 }
 
@@ -127,9 +149,10 @@ async function fetchAIRecommendation() {
     if (typeof data === "string" && data.startsWith('"') && data.endsWith('"')) {
       data = data.slice(1, -1);
     }
-    document.getElementById("aiRecommendation").innerText = data;
-  } catch (e) {
-    console.error("Failed to fetch AI recommendation", e);
+    document.getElementById("aiRecommendation").textContent = data || "No recommendations available";
+  } catch (error) {
+    console.error("Failed to fetch AI recommendation:", error);
+    document.getElementById("aiRecommendation").textContent = "Unable to load recommendations";
   }
 }
 
@@ -141,72 +164,65 @@ async function togglePumpWithManualOverride(state) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pump: state, manual_override: true })
     });
-    showPumpPopup(state);
-    setPumpStatus(state);
-  } catch (e) {
-    console.error("Failed to update pump state", e);
+    showPumpNotification(state);
+    updatePumpStatus(state);
+  } catch (error) {
+    console.error("Failed to update pump state:", error);
   }
 }
 
-// Return to Auto Mode (automation resumes)
-function resetAutoMode() {
-  fetch(`${FIREBASE_URL}/controls.json`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ manual_override: false })
-  })
-  .then(() => {
-    showPumpPopup("auto"); // Show auto mode popup
-  })
-  .catch((err) => {
-    console.error("Failed to reset to auto mode: " + err);
-  });
-}
-
-// Show pump popup (static, no fade/move, just appears/disappears)
-function showPumpPopup(isOn) {
-  const popup = document.getElementById('pump-popup');
-  const sound = document.getElementById('pump-sound');
-  if (popup) {
-    if (isOn === "auto") {
-      popup.querySelector('.pump-message').textContent = "Auto Mode Activated!";
-      popup.querySelector('.pump-icon').textContent = "🤖";
-    } else {
-      popup.querySelector('.pump-message').textContent = isOn ? "Pump Started!" : "Pump Stopped!";
-      popup.querySelector('.pump-icon').textContent = isOn ? "💧" : "🛑";
-    }
-    popup.style.display = 'flex';
-    popup.style.opacity = '1';
-    sound.currentTime = 0;
-    sound.play();
-    setTimeout(() => {
-      popup.style.display = 'none';
-      popup.style.opacity = '0';
-    }, 3000); // Hide after 3 seconds
-  }
-}
-
-// Call this in togglePump after successful fetch:
-async function togglePump(state) {
+// Return to Auto Mode
+async function resetAutoMode() {
   try {
     await fetch(`${FIREBASE_URL}/controls.json`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pump: state })
+      body: JSON.stringify({ manual_override: false })
     });
-    showPumpPopup(state); // Show popup
-    alert(`Pump turned ${state ? "ON" : "OFF"}`);
-  } catch (e) {
-    console.error("Failed to update pump state", e);
+    showPumpNotification("auto");
+  } catch (error) {
+    console.error("Failed to reset to auto mode:", error);
   }
 }
 
-// Update pump status on UI
-function setPumpStatus(isOn) {
-  const pumpStateElem = document.getElementById('pump-state');
-  if (pumpStateElem) {
-    pumpStateElem.textContent = isOn ? "ON" : "OFF";
-    pumpStateElem.className = isOn ? "on" : "off";
+// Show pump notification
+function showPumpNotification(state) {
+  const notification = document.getElementById('pump-popup');
+  const sound = document.getElementById('pump-sound');
+  
+  if (notification) {
+    const messageElement = notification.querySelector('.notification-message');
+    const iconElement = notification.querySelector('.notification-icon');
+    
+    if (state === "auto") {
+      messageElement.textContent = "System returned to automatic mode";
+      iconElement.textContent = "🤖";
+    } else {
+      messageElement.textContent = state ? "Pump has been started manually" : "Pump has been stopped manually";
+      iconElement.textContent = state ? "💧" : "⏹️";
+    }
+    
+    notification.style.display = 'flex';
+    
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(() => {}); // Ignore audio errors
+    }
+    
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, 4000);
+  }
+}
+
+// Update pump status display
+function updatePumpStatus(isOn) {
+  const statusText = document.getElementById('pump-status-text');
+  const indicator = document.getElementById('pump-indicator');
+  
+  if (statusText && indicator) {
+    statusText.textContent = isOn ? "Running" : "Stopped";
+    indicator.className = isOn ? "status-indicator active" : "status-indicator";
   }
 }
 
@@ -215,140 +231,82 @@ async function fetchPumpStatus() {
   try {
     const res = await fetch(`${FIREBASE_URL}/controls.json`);
     const data = await res.json();
-    setPumpStatus(data.pump);
-  } catch (e) {
-    console.error("Failed to fetch pump status", e);
+    if (data) {
+      updatePumpStatus(data.pump);
+    }
+  } catch (error) {
+    console.error("Failed to fetch pump status:", error);
   }
 }
 
-// Animate cards on load
-window.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.card').forEach((card, i) => {
-    card.style.opacity = '0';
-    setTimeout(() => {
-      card.style.opacity = '1';
-    }, 150 + i * 120);
-  });
-});
+// Track last alerted AQI status
+let lastAlertStatus = null;
 
-// Track last alerted AQI value
-let lastAlertStatus = null; // track last AQI category
-
-
-// Show air quality alert (only once per AQI value)
-function showAirQualityAlert(message, status) {
-  if (lastAlertStatus === status) return; // No repeat for same category
-  lastAlertStatus = status;
-
-  const popup = document.getElementById('air-quality-popup');
+// Show air quality alert
+function showAirQualityAlert(message) {
+  const notification = document.getElementById('air-quality-popup');
   const sound = document.getElementById('aqi-alert-sound');
-  if (popup) {
-    popup.querySelector('.aqi-message').textContent = message;
-    popup.style.display = 'flex';
-    popup.style.opacity = '1';
-    popup.style.transform = 'translate(-50%, 0) scale(1)';
-  }
-  if (sound) {
-    sound.currentTime = 0;
-    sound.play();
-  }
-}
-
-
-// Confirm button closes popup
-document.getElementById('aqi-confirm-btn').onclick = function() {
-  const popup = document.getElementById('air-quality-popup');
-  popup.style.opacity = '0';
-  setTimeout(() => popup.style.display = 'none', 400);
-};
-
-// Check air quality and show alert if needed
-function checkAirQuality() {
-  const airQualityElem = document.getElementById("airQuality");
-  if (airQualityElem) {
-    const match = airQualityElem.textContent.match(/(\d+)\s*AQI/);
-    if (match) {
-      const aqi = parseInt(match[1]);
-      if (aqi > 400) {
-        showAirQualityAlert("Air Quality is BAD!", aqi);
-      }
+  
+  if (notification) {
+    notification.querySelector('.notification-message').textContent = message;
+    notification.style.display = 'flex';
+    
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(() => {}); // Ignore audio errors
     }
   }
 }
 
-// Weather code mapping for Open-Meteo
+// Close air quality alert
+document.getElementById('aqi-confirm-btn').addEventListener('click', function() {
+  const notification = document.getElementById('air-quality-popup');
+  notification.style.display = 'none';
+});
+
+// Weather functions
 function getWeatherDescription(code) {
-  const map = {
-    0: "Clear sky",
-    1: "Mainly clear",
-    2: "Partly cloudy",
-    3: "Overcast",
-    45: "Fog",
-    48: "Depositing rime fog",
-    51: "Light drizzle",
-    53: "Moderate drizzle",
-    55: "Dense drizzle",
-    56: "Light freezing drizzle",
-    57: "Dense freezing drizzle",
-    61: "Slight rain",
-    63: "Moderate rain",
-    65: "Heavy rain",
-    66: "Light freezing rain",
-    67: "Heavy freezing rain",
-    71: "Slight snow fall",
-    73: "Moderate snow fall",
-    75: "Heavy snow fall",
-    77: "Snow grains",
-    80: "Slight rain showers",
-    81: "Moderate rain showers",
-    82: "Violent rain showers",
-    85: "Slight snow showers",
-    86: "Heavy snow showers",
-    95: "Thunderstorm",
-    96: "Thunderstorm with slight hail",
-    99: "Thunderstorm with heavy hail"
+  const weatherMap = {
+    0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+    45: "Fog", 48: "Depositing rime fog", 51: "Light drizzle", 53: "Moderate drizzle",
+    55: "Dense drizzle", 61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+    71: "Slight snow", 73: "Moderate snow", 75: "Heavy snow", 80: "Rain showers",
+    81: "Moderate rain showers", 82: "Violent rain showers", 95: "Thunderstorm"
   };
-  return map[code] || "Unknown";
+  return weatherMap[code] || "Unknown conditions";
 }
 
-function getWeatherIcon(code) {
-  const iconMap = {
-    0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️",
-    51: "🌦️", 53: "🌦️", 55: "🌧️", 56: "🌧️", 57: "🌧️",
-    61: "🌧️", 63: "🌧️", 65: "🌧️", 66: "🌧️", 67: "🌧️",
-    71: "❄️", 73: "❄️", 75: "❄️", 77: "❄️",
-    80: "🌦️", 81: "🌧️", 82: "🌧️",
-    85: "🌨️", 86: "🌨️",
-    95: "⛈️", 96: "⛈️", 99: "⛈️"
-  };
-  return iconMap[code] || "🌦️";
-}
-
-// Fetch weather from Open-Meteo (no API key needed)
+// Fetch weather data
 function fetchWeather() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      pos => {
-        updateWeather(pos.coords.latitude, pos.coords.longitude);
+      position => {
+        updateWeather(position.coords.latitude, position.coords.longitude);
       },
-      err => {
-        updateWeather(51.5074, -0.1278); // fallback to London
+      () => {
+        updateWeather(40.7128, -74.0060); // Default to New York
       }
     );
   } else {
-    updateWeather(51.5074, -0.1278);
+    updateWeather(40.7128, -74.0060);
   }
 }
 
 function updateWeather(lat, lon) {
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => {
       const weather = data.current_weather;
-      document.getElementById('weather-summary').textContent =
-        `${Math.round(weather.temperature)}°C, ${getWeatherDescription(weather.weathercode)}`;
-      document.getElementById('weather-details').textContent =
-        `Wind: ${weather.windspeed} km/h`;
+      const temp = Math.round(weather.temperature);
+      const description = getWeatherDescription(weather.weathercode);
+      
+      document.getElementById('weather-summary').textContent = `${temp}°C, ${description}`;
+      document.getElementById('weather-details').textContent = `Wind: ${weather.windspeed} km/h`;
+    })
+    .catch(error => {
+      console.error("Failed to fetch weather:", error);
+      document.getElementById('weather-summary').textContent = "Weather data unavailable";
+      document.getElementById('weather-details').textContent = "";
     });
 }
 
@@ -358,21 +316,40 @@ function refreshAllData() {
   fetchAIRecommendation();
   fetchWeather();
   fetchPumpStatus();
-
-  // Check air quality and show alert if needed
-
 }
 
-// Poll every 5 seconds
-setInterval(refreshAllData, 5000);
-
-// Initial data fetch
-refreshAllData();
-
-document.getElementById('fab').onclick = () => {
+// Refresh button functionality
+document.getElementById('refresh-btn').addEventListener('click', function() {
   refreshAllData();
-  document.getElementById('fab').style.transform = 'rotate(360deg)';
-  setTimeout(() => document.getElementById('fab').style.transform = '', 400);
-};
+  
+  // Add visual feedback
+  const icon = this.querySelector('.btn-icon');
+  icon.style.transform = 'rotate(360deg)';
+  icon.style.transition = 'transform 0.5s ease';
+  
+  setTimeout(() => {
+    icon.style.transform = '';
+  }, 500);
+});
 
-
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+  // Initial data fetch
+  refreshAllData();
+  
+  // Set up periodic updates every 5 seconds
+  setInterval(refreshAllData, 5000);
+  
+  // Add smooth animations to cards
+  const cards = document.querySelectorAll('.sensor-card, .status-card, .info-card');
+  cards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+      card.style.transition = 'all 0.5s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 100);
+  });
+});

@@ -5,327 +5,228 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AQUACLIMA Dashboard</title>
   <link rel="stylesheet" href="style/index.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;500;400&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Montserrat', Arial, sans-serif;
-      background: radial-gradient(ellipse 80% 60% at 50% 20%, #e0f7fa 70%, #c8e6c9 100%);
-      min-height: 100vh;
-      margin: 0;
-      color: #222;
-      overflow-x: hidden;
-    }
-    header {
-      text-align: center;
-      padding: 32px 0 12px 0;
-      background: rgba(255,255,255,0.7);
-      box-shadow: 0 2px 24px #43a04722;
-      border-bottom: 2px solid #43a04722;
-    }
-    h1 {
-      font-size: 3.2rem;
-      font-weight: 900;
-      color: #43a047;
-      letter-spacing: 6px;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 12px #8bc34a55, 0 1px 0 #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    .welcome-message {
-      font-size: 1.25rem;
-      color: #009688;
-      background: rgba(255,255,255,0.8);
-      border-radius: 14px;
-      padding: 10px 28px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 16px #8bc34a22;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .app-bar {
-      width: 100vw;
-      background: linear-gradient(90deg, #43a047 0%, #00bcd4 100%);
-      color: #fff;
-      font-size: 1.1rem;
-      font-weight: 700;
-      padding: 0.7rem 0;
-      text-align: center;
-      letter-spacing: 2px;
-      box-shadow: 0 2px 12px #43a04733;
-      margin-bottom: 0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 32px;
-      justify-content: center;
-      align-items: flex-start;
-      margin: 0 auto;
-      max-width: 1200px;
-      padding: 24px 0;
-    }
-    .card {
-      flex: 1 1 320px;
-      max-width: 340px;
-      min-width: 240px;
-      margin-bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255,255,255,0.95);
-      border-radius: 24px;
-      box-shadow: 0 8px 32px #43a04722;
-      padding: 32px 18px 24px 18px;
-      position: relative;
-      min-height: 180px;
-      transition: box-shadow 0.3s, border-color 0.3s;
-      border: 2px solid #e0f7fa;
-      backdrop-filter: blur(8px);
-    }
-    .card:hover {
-      box-shadow: 0 16px 48px #43a04744;
-      border-color: #43a047;
-      transform: scale(1.03);
-    }
-    .gauge-icon {
-      font-size: 2.8rem;
-      margin-bottom: 10px;
-      color: #43a047;
-      filter: drop-shadow(0 2px 4px #8bc34a88);
-      transition: transform 0.2s;
-    }
-    .card:hover .gauge-icon {
-      transform: scale(1.15) rotate(-8deg);
-    }
-    .gauge-label {
-      margin-top: 8px;
-      font-size: 1.15rem;
-      color: #388e3c;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-align: center;
-      margin-bottom: 6px;
-    }
-    .gauge-data {
-      font-size: 1.25rem;
-      color: #222;
-      font-weight: 700;
-      margin-top: 6px;
-      text-align: center;
-      word-break: break-word;
-      background: linear-gradient(90deg, #e0f7fa 60%, #c8e6c9 100%);
-      border-radius: 8px;
-      padding: 6px 0;
-      width: 100%;
-      box-shadow: 0 2px 8px #43a04722;
-    }
-    .controls {
-      display: flex;
-      gap: 18px;
-      justify-content: center;
-      margin: 40px 0 24px 0;
-      flex-wrap: wrap;
-    }
-    .controls button {
-      background: linear-gradient(90deg, #43a047 0%, #00bcd4 100%);
-      color: #fff;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 14px;
-      padding: 14px 38px;
-      box-shadow: 0 2px 12px #43a04733;
-      cursor: pointer;
-      transition: box-shadow 0.3s, transform 0.2s;
-      margin-bottom: 8px;
-    }
-    .controls button:hover {
-      box-shadow: 0 8px 32px #43a04755;
-      transform: scale(1.07) rotate(-2deg);
-      background: linear-gradient(90deg, #00bcd4 0%, #43a047 100%);
-    }
-    footer {
-      text-align: center;
-      padding: 24px 0 12px 0;
-      color: #388e3c;
-      font-size: 1.1rem;
-      background: rgba(255,255,255,0.7);
-      margin-top: 40px;
-      border-top: 2px solid #43a04722;
-      box-shadow: 0 -2px 24px #43a04722;
-      letter-spacing: 2px;
-    }
-    @media (max-width: 700px) {
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
-        padding: 18px 4px 0 4px;
-      }
-      .card {
-        min-height: 140px;
-        padding: 18px 8px 14px 8px;
-      }
-      h1 {
-        font-size: 2.1rem;
-      }
-      .welcome-message {
-        font-size: 1rem;
-        padding: 8px 10px;
-      }
-      .controls button {
-        padding: 10px 18px;
-        font-size: 1rem;
-      }
-    }
-
-    /* Loader Animation */
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-16px); }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- Loading Screen -->
   <div id="loading-screen">
-    <div style="display: flex; flex-direction: column; align-items: center;">
-      <div class="loader-logo"></div>
-      <div class="loading-sub"></div>
-      <div class="loading-empower"></div>
-      <div class="loader-animation" style="margin-top: 32px;">
-        <span class="loader-dot" style="font-size:2.5rem; animation: bounce 1.2s infinite;">🌱</span>
-        <span class="loader-dot" style="font-size:2.5rem; animation: bounce 1.2s 0.3s infinite;">🌿</span>
-        <span class="loader-dot" style="font-size:2.5rem; animation: bounce 1.2s 0.6s infinite;">💧</span>
+    <div class="loading-container">
+      <div class="loading-logo">AQUACLIMA</div>
+      <div class="loading-subtitle">Smart Agriculture Platform</div>
+      <div class="loading-progress">
+        <div class="progress-bar"></div>
       </div>
+      <div class="loading-status">Initializing dashboard...</div>
     </div>
   </div>
 
-  <div class="app-bar">
-    <span>🌱 AQUACLIMA PRO MAX</span>
-  </div>
-  <header>
-    <h1>
-      AQUACLIMA <span style="font-size:2.2rem; color:#00bcd4;">💧</span>
-    </h1>
-    <p class="welcome-message">
-      <span>🌿</span>
-      Welcome to AquaClima – Empowering Smart Agriculture with Data & Innovation!
-      <span>🐝</span>
-    </p>
-    <p>Smart Water & Environmental Management System</p>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">🌱</div>
+        <div class="brand-text">
+          <h1>AQUACLIMA</h1>
+          <p>Smart Agriculture Platform</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="refresh-btn" class="btn btn-secondary">
+          <span class="btn-icon">↻</span>
+          Refresh
+        </button>
+      </div>
+    </div>
   </header>
 
-  <!-- Main Dashboard Grid -->
-<!-- ...existing code... -->
-<section class="grid">
-  <div class="card">
-    <div class="gauge-icon">🚿</div>
-    <div class="gauge-label">Soil Moisture</div>
-    <div id="soilMoisture" class="gauge-data">-- %</div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">💧</div>
-    <div class="gauge-label">Humidity</div>
-    <div id="airHumidity" class="gauge-data">-- %</div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">🌊</div>
-    <div class="gauge-label">Water Level</div>
-    <div id="waterLevel" class="gauge-data">--</div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">🧪</div>
-    <div class="gauge-label">pH Level</div>
-    <div id="phValue" class="gauge-data">--</div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">🌡️</div>
-    <div class="gauge-label">Air Temp</div>
-    <div id="airData" class="gauge-data">--</div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">💦</div>
-    <div class="gauge-label">Water Temp</div>
-    <div id="waterTemp" class="gauge-data">--</div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">🌬️</div>
-    <div class="gauge-label">Air Quality</div>
-    <div id="airQuality" class="gauge-data">--</div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">🔄</div>
-    <div class="gauge-label">Water Flow</div>
-    <div id="flowRate" class="gauge-data">--</div>
-  </div>
-  <div class="card" style="grid-column: span 2; background: linear-gradient(90deg, #e0f7fa 60%, #c8e6c9 100%);">
-    <div class="gauge-icon">🤖</div>
-    <div class="gauge-label">AI Recommendation</div>
-    <div id="aiRecommendation" class="gauge-data">--</div>
-  </div>
-  <div class="card" style="grid-column: span 2;">
-    <div class="gauge-icon">🌦️</div>
-    <div class="gauge-label">Weather</div>
-    <div class="gauge-data" id="weather-summary">--</div>
-    <div class="gauge-data" id="weather-details"></div>
-  </div>
-  <div class="card" style="grid-column: span 2;">
-    <div class="gauge-icon">🛠️</div>
-    <div class="gauge-label">Pump Status</div>
-    <div class="gauge-data">Pump: <span id="pump-state">--</span></div>
-  </div>
-  <div class="card">
-    <div class="gauge-icon">🔋</div>
-    <div class="gauge-label">Battery</div>
-    <div id="batteryPercent" class="gauge-data">-- %</div>
-  </div>
-</section>
-<!-- ...existing code... -->
-  <section class="controls">
-    <button onclick="togglePumpWithManualOverride(true)">Start Pump</button>
-    <button onclick="togglePumpWithManualOverride(false)">Stop Pump</button>
-    <button onclick="resetAutoMode()">Return to Auto</button>
-  </section>
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Status Overview -->
+      <section class="status-overview">
+        <div class="status-card system-status">
+          <div class="status-indicator active"></div>
+          <div class="status-info">
+            <h3>System Status</h3>
+            <p>All sensors operational</p>
+          </div>
+        </div>
+        <div class="status-card pump-status">
+          <div class="status-indicator" id="pump-indicator"></div>
+          <div class="status-info">
+            <h3>Pump Status</h3>
+            <p id="pump-status-text">Checking...</p>
+          </div>
+        </div>
+        <div class="status-card battery-status">
+          <div class="battery-icon">
+            <div class="battery-level" id="battery-level"></div>
+          </div>
+          <div class="status-info">
+            <h3>Battery Level</h3>
+            <p id="battery-text">-- %</p>
+          </div>
+        </div>
+      </section>
 
-  <!-- Floating Action Button -->
-  <button id="fab" title="Refresh" style="
-    position: fixed; right: 32px; bottom: 32px; z-index: 99;
-    background: linear-gradient(90deg,#43a047,#00bcd4);
-    color: #fff; border:none; border-radius:50%; width:64px; height:64px;
-    box-shadow:0 4px 24px #43a04744; font-size:2rem; cursor:pointer;
-    transition:box-shadow 0.3s, transform 0.2s;">
-    ⟳
-  </button>
+      <!-- Sensor Grid -->
+      <section class="sensor-grid">
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">💧</div>
+            <h3>Soil Moisture</h3>
+          </div>
+          <div class="sensor-value" id="soilMoisture">-- %</div>
+          <div class="sensor-chart">
+            <div class="progress-ring">
+              <svg class="progress-ring-svg" width="60" height="60">
+                <circle class="progress-ring-bg" cx="30" cy="30" r="25"></circle>
+                <circle class="progress-ring-fill" cx="30" cy="30" r="25" id="soil-progress"></circle>
+              </svg>
+            </div>
+          </div>
+        </div>
 
-  <!-- Popups & Sounds -->
-  <div id="air-quality-popup" class="air-quality-popup" style="display:none;">
-    <span class="aqi-icon">⚠️</span>
-    <span class="aqi-message">Air Quality is BAD!</span>
-    <button id="aqi-confirm-btn"
-      style="margin-left:24px;background:linear-gradient(90deg,#43a047,#00bcd4);color:#fff;font-size:1.1rem;font-weight:700;border:none;border-radius:12px;padding:8px 24px;box-shadow:0 2px 12px #43a04733;cursor:pointer;transition:box-shadow 0.3s,transform 0.2s;">
-      Confirm
-    </button>
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">🌫️</div>
+            <h3>Air Humidity</h3>
+          </div>
+          <div class="sensor-value" id="airHumidity">-- %</div>
+          <div class="sensor-chart">
+            <div class="progress-ring">
+              <svg class="progress-ring-svg" width="60" height="60">
+                <circle class="progress-ring-bg" cx="30" cy="30" r="25"></circle>
+                <circle class="progress-ring-fill" cx="30" cy="30" r="25" id="humidity-progress"></circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">🌊</div>
+            <h3>Water Level</h3>
+          </div>
+          <div class="sensor-value" id="waterLevel">--</div>
+          <div class="sensor-status" id="water-status">Checking...</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">⚗️</div>
+            <h3>pH Level</h3>
+          </div>
+          <div class="sensor-value" id="phValue">--</div>
+          <div class="sensor-status" id="ph-status">Checking...</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">🌡️</div>
+            <h3>Air Temperature</h3>
+          </div>
+          <div class="sensor-value" id="airData">--</div>
+          <div class="sensor-status">Current conditions</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">🌡️</div>
+            <h3>Water Temperature</h3>
+          </div>
+          <div class="sensor-value" id="waterTemp">--</div>
+          <div class="sensor-status" id="water-temp-status">Checking...</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">🌬️</div>
+            <h3>Air Quality</h3>
+          </div>
+          <div class="sensor-value" id="airQuality">--</div>
+          <div class="sensor-status" id="air-quality-status">Checking...</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <div class="sensor-icon">💨</div>
+            <h3>Water Flow</h3>
+          </div>
+          <div class="sensor-value" id="flowRate">--</div>
+          <div class="sensor-status" id="flow-status">Checking...</div>
+        </div>
+      </section>
+
+      <!-- Information Cards -->
+      <section class="info-grid">
+        <div class="info-card weather-card">
+          <div class="info-header">
+            <div class="info-icon">🌤️</div>
+            <h3>Weather Conditions</h3>
+          </div>
+          <div class="weather-content">
+            <div class="weather-main" id="weather-summary">Loading...</div>
+            <div class="weather-details" id="weather-details">--</div>
+          </div>
+        </div>
+
+        <div class="info-card ai-card">
+          <div class="info-header">
+            <div class="info-icon">🤖</div>
+            <h3>AI Recommendations</h3>
+          </div>
+          <div class="ai-content">
+            <div class="ai-recommendation" id="aiRecommendation">Analyzing data...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Control Panel -->
+      <section class="control-panel">
+        <div class="control-header">
+          <h2>System Controls</h2>
+          <p>Manual override controls for pump operation</p>
+        </div>
+        <div class="control-actions">
+          <button class="btn btn-success" onclick="togglePumpWithManualOverride(true)">
+            <span class="btn-icon">▶️</span>
+            Start Pump
+          </button>
+          <button class="btn btn-danger" onclick="togglePumpWithManualOverride(false)">
+            <span class="btn-icon">⏹️</span>
+            Stop Pump
+          </button>
+          <button class="btn btn-primary" onclick="resetAutoMode()">
+            <span class="btn-icon">🔄</span>
+            Auto Mode
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Notifications -->
+  <div id="air-quality-popup" class="notification notification-warning" style="display:none;">
+    <div class="notification-icon">⚠️</div>
+    <div class="notification-content">
+      <div class="notification-title">Air Quality Alert</div>
+      <div class="notification-message">Air quality levels require attention</div>
+    </div>
+    <button class="notification-close" id="aqi-confirm-btn">×</button>
   </div>
+
+  <div id="pump-popup" class="notification notification-info" style="display:none;">
+    <div class="notification-icon">💧</div>
+    <div class="notification-content">
+      <div class="notification-title">Pump Status</div>
+      <div class="notification-message"></div>
+    </div>
+  </div>
+
+  <!-- Audio -->
   <audio id="aqi-alert-sound" src="https://commondatastorage.googleapis.com/codeskulptor-assets/jump.ogg"></audio>
   <audio id="pump-sound" src="https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3"></audio>
-
-  <div id="pump-popup" class="pump-popup" style="display:none;">
-    <span class="pump-icon">💧</span>
-    <span class="pump-message"></span>
-  </div>
-
-  <footer>
-    <p>🌿 AQUACLIMA | Real-time AI Agriculture System</p>
-  </footer>
 
   <script src="script/main.js"></script>
 </body>
