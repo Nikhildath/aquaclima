@@ -377,4 +377,5 @@ document.addEventListener('DOMContentLoaded', function() {
       card.style.transform = 'translateY(0)';
     }, index * 100);
   });
+
 });
