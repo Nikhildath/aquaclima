@@ -156,6 +156,8 @@ function updateUI(data) {
   document.getElementById("flow-status").className = `sensor-status ${flowStatus.class}`
   updateTrend("flow-trend", flow, 3)
 
+  // Update current flow rate for water usage calculations
+  currentFlowRate = flow || 2.5 // Use Firebase flow rate or default to 2.5 L/min
   // Battery Percentage - fix the path
   const battery = data.battery || 0 // This was correct, but make sure it's being read properly
   document.getElementById("battery-text").textContent = `${battery}%`
@@ -288,7 +290,7 @@ function updateStats() {
   // Water used calculation (simplified)
   const waterUsed = document.getElementById("water-used")
   if (waterUsed) {
-    totalWaterUsed += Math.random() * 0.5 // Simulate water usage
+    // Water usage is now calculated in updatePumpStatus based on actual flow rate
     waterUsed.textContent = `${totalWaterUsed.toFixed(1)} L`
   }
 
@@ -484,6 +486,7 @@ let pumpStartTime = null
 let totalPumpRuntime = 0 // in milliseconds
 let totalWaterUsed = 0
 let lastPumpState = false
+let currentFlowRate = 2.5 // Default flow rate, will be updated from Firebase
 
 // Update pump status and calculate runtime/water usage
 function updatePumpStatus(isOn) {
@@ -502,9 +505,9 @@ function updatePumpStatus(isOn) {
       const sessionRuntime = Date.now() - pumpStartTime
       totalPumpRuntime += sessionRuntime
 
-      // Calculate water used (assume 2.5 L/min flow rate)
+      // Calculate water used using actual flow rate from Firebase
       const minutesRun = sessionRuntime / (1000 * 60)
-      const waterUsedThisSession = minutesRun * 2.5 // 2.5 L/min
+      const waterUsedThisSession = minutesRun * currentFlowRate
       totalWaterUsed += waterUsedThisSession
 
       pumpStartTime = null
@@ -553,7 +556,7 @@ function updatePumpStatus(isOn) {
     let currentWaterUsed = totalWaterUsed
     if (isOn && pumpStartTime) {
       const currentSessionMinutes = (Date.now() - pumpStartTime) / (1000 * 60)
-      currentWaterUsed += currentSessionMinutes * 2.5
+      currentWaterUsed += currentSessionMinutes * currentFlowRate
     }
     waterUsedElement.textContent = `${currentWaterUsed.toFixed(1)} L`
   }
