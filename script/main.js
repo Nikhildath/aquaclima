@@ -1108,10 +1108,10 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshAllData()
 
   // Set up periodic updates every 5 seconds
-  setInterval(refreshAllData, 5000)
+  setInterval(refreshAllData, 2000)
 
   // Check schedules every minute
-  setInterval(checkSchedules, 60000)
+  setInterval(checkSchedules, 1000)
 
   // Update pump runtime display every second when pump is running
   setInterval(() => {
@@ -1135,6 +1135,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Add some initial alerts for demo
   setTimeout(() => {
-    addAlert("info", "System Started", "AQUACLIMA dashboard initialized successfully")
+    addAlert("info", "System Started", "CLIMANEER dashboard initialized successfully")
   }, 3000)
 })
