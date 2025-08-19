@@ -71,6 +71,7 @@ function initTabs() {
 
 // Update UI with sensor data
 function updateUI(data) {
+  console.log("updateUI called with data:", data);
   const sensors = data.sensors || {}; // Access the nested 'sensors' object
 
   // Store data for history
@@ -353,6 +354,7 @@ function updateAIConfidence() {
 
 // Fetch sensor data from Firebase
 async function fetchSensorData() {
+  console.log("Fetching data from Firebase...");
   try {
     const res = await fetch(`${FIREBASE_URL}.json`)
     const data = await res.json()
@@ -360,6 +362,7 @@ async function fetchSensorData() {
       updateUI(data)
       updateConnectionStatus(true)
     }
+    console.log("Firebase data fetched:", data);
   } catch (error) {
     console.error("Failed to fetch sensor data:", error)
     updateConnectionStatus(false)
@@ -1039,6 +1042,8 @@ function initDataExport() {
 
 // Update history table
 function updateHistoryTable() {
+  console.log("Sensor History:", sensorHistory);
+
   const tbody = document.getElementById("history-tbody")
   if (!tbody) return
 
@@ -1051,8 +1056,8 @@ function updateHistoryTable() {
     const row = document.createElement("tr")
     row.innerHTML = `
       <td>${new Date(entry.timestamp).toLocaleString()}</td>
-      <td>${entry.soil || "--"}%</td>
-      <td>${entry.humidity || "--"}%</td>
+      <td>${entry.soil_moisture || "--"}%</td>
+      <td>${entry.air_humidity || "--"}%</td>
       <td>${entry.air_temp || "--"}°C</td>
       <td>${entry.ph ? entry.ph.toFixed(1) : "--"}</td>
       <td>${entry.water_level || "--"}%</td>
