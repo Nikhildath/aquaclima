@@ -71,41 +71,42 @@ function initTabs() {
 
 // Update UI with sensor data
 function updateUI(data) {
+  const sensors = data.sensors || {}; // Access the nested 'sensors' object
+
   // Store data for history
-  const timestamp = new Date().toISOString()
+  const timestamp = new Date().toISOString();
   sensorHistory.push({
     timestamp,
-    ...data,
+    ...sensors, // Store sensor data
   })
 
   // Keep only last 100 entries
   if (sensorHistory.length > 100) {
     sensorHistory.shift()
   }
-
   // Soil Moisture
-  const soilMoisture = data.soil || 0
+  const soilMoisture = sensors.soil_moisture || 0;
   document.getElementById("soilMoisture").textContent = `${soilMoisture}%`
   updateProgressRing("soil-progress", soilMoisture, 100)
   updateTrend("moisture-trend", soilMoisture, 50)
 
   // Air Humidity
-  const humidity = data.humidity || 0
+  const humidity = sensors.air_humidity || 0;
   document.getElementById("airHumidity").textContent = `${humidity}%`
   updateProgressRing("humidity-progress", humidity, 100)
   updateTrend("humidity-trend", humidity, 60)
 
   // Water Level
-  const waterLevel = data.water_level || 0
+  const waterLevel = sensors.water_level || 0;
   const waterStatus = getStatusInfo(waterLevel, [20, 40, 60], ["Low", "Average", "Good", "High"])
   document.getElementById("waterLevel").textContent = `${waterLevel}%`
   document.getElementById("water-status").textContent = waterStatus.text
   document.getElementById("water-status").className = `sensor-status ${waterStatus.class}`
   updateWaterTank(waterLevel)
-  updateTrend("water-trend", waterLevel, 50)
+  updateTrend("water-trend", waterLevel, 50);
 
   // pH Level
-  const ph = data.ph || 0
+  const ph = sensors.ph || 0
   const phStatus = getStatusInfo(ph, [5.5, 6.5, 7.5], ["Acidic", "Good", "Average", "Alkaline"])
   document.getElementById("phValue").textContent = ph.toFixed(1)
   document.getElementById("ph-status").textContent = phStatus.text
@@ -114,13 +115,13 @@ function updateUI(data) {
   updateTrend("ph-trend", ph, 7)
 
   // Air Temperature
-  const airTemp = data.air_temp || 0
+  const airTemp = sensors.air_temp || 0;
   document.getElementById("airData").textContent = `${airTemp}°C`
   updateTemperatureGauge(airTemp)
   updateTrend("temp-trend", airTemp, 25)
 
-  // Water Temperature
-  const waterTemp = data.water_temp || 0
+  // Water Temperature - Note: This sensor is not in the provided structure, keeping existing code.
+  const waterTemp = sensors.water_temp || 0
   const waterTempStatus = getStatusInfo(waterTemp, [10, 20, 30], ["Cold", "Good", "Warm", "Hot"])
   document.getElementById("waterTemp").textContent = `${waterTemp}°C`
   document.getElementById("water-temp-status").textContent = waterTempStatus.text
@@ -128,7 +129,7 @@ function updateUI(data) {
   updateTrend("water-temp-trend", waterTemp, 22)
 
   // Air Quality
-  const airQuality = data.air_quality || 0
+  const airQuality = sensors.air_quality || 0;
   const airQualityStatus = getStatusInfo(airQuality, [50, 100, 150], ["Good", "Average", "Bad", "Hazardous"])
 
   document.getElementById("airQuality").textContent = `${airQuality} AQI`
@@ -149,7 +150,7 @@ function updateUI(data) {
   lastAirQualityStatus = airQualityStatus.text
 
   // Water Flow
-  const flow = data.flow || 0
+  const flow = sensors.flow || 0;
   const flowStatus = getStatusInfo(flow, [1, 3, 5], ["Low", "Average", "Good", "High"])
   document.getElementById("flowRate").textContent = `${flow} L/min`
   document.getElementById("flow-status").textContent = flowStatus.text
@@ -158,8 +159,8 @@ function updateUI(data) {
 
   // Update current flow rate for water usage calculations
   currentFlowRate = flow || 2.5 // Use Firebase flow rate or default to 2.5 L/min
-  // Battery Percentage - fix the path
-  const battery = data.battery || 0 // This was correct, but make sure it's being read properly
+  // Battery Percentage
+  const battery = sensors.battery || 0; // Access battery from the 'sensors' object
   document.getElementById("battery-text").textContent = `${battery}%`
   updateBatteryLevel(battery)
   updateBatteryTime(battery)
