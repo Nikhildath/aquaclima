@@ -1019,11 +1019,11 @@ function initDataExport() {
     exportBtn.addEventListener("click", () => {
       const csvContent =
         "data:text/csv;charset=utf-8," +
-        "Timestamp,Soil Moisture,Air Humidity,Air Temperature,pH Level,Water Level\n" +
-        sensorHistory
+ "Timestamp,Soil Moisture (%),Air Humidity (%),Air Temperature (°C),pH Level,Water Level (%)\n" +
+ sensorHistory
           .map(
             (row) =>
-              `${row.timestamp},${row.soil || 0},${row.humidity || 0},${row.air_temp || 0},${row.ph || 0},${row.water_level || 0}`,
+ `${row.timestamp},${row.soil_moisture || 0},${row.air_humidity || 0},${row.air_temp || 0},${row.ph || 0},${row.water_level || 0}`,
           )
           .join("\n")
 
@@ -1044,7 +1044,7 @@ function initDataExport() {
 function updateHistoryTable() {
   console.log("Sensor History:", sensorHistory);
 
-  const tbody = document.getElementById("history-tbody")
+  const tbody = document.getElementById("history-tbody");
   if (!tbody) return
 
   tbody.innerHTML = ""
