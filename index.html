@@ -613,12 +613,13 @@
   <!-- Audio -->
   <audio id="aqi-alert-sound" src="https://commondatastorage.googleapis.com/codeskulptor-assets/jump.ogg"></audio>
   <audio id="pump-sound" src="https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3"></audio>
-  <!-- Elfsight AI Chatbot | Untitled AI Chatbot -->
-  <script src="https://elfsightcdn.com/platform.js" async></script>
-  <div class="elfsight-app-418aaff7-e612-47a0-86f1-f3238b1c4771" data-elfsight-app-lazy></div>
+  <script>
+    (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="GtW2iMKsdGP2_ptNs6vRs";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+  </script>
   <script src="script/main.js"></script>
   <script src="script/animations.js"></script>
   <script src="script/charts.js"></script>
 </body>
 
 </html>
+
